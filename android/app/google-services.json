@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "199679658679",
+    "project_id": "firsttemp-c64be",
+    "storage_bucket": "firsttemp-c64be.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199679658679:android:b7aacae42b094bd5b11b32",
+        "android_client_info": {
+          "package_name": "com.mostafa.tempo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATXOrDy60EQ5GQnPz_sPmefj0jJzEp0TI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199679658679:android:8ec11c5c8ad8cb86b11b32",
+        "android_client_info": {
+          "package_name": "mostafa.app.medicaltime"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATXOrDy60EQ5GQnPz_sPmefj0jJzEp0TI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
