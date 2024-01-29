@@ -6,4 +6,5 @@
 
     <!-- Added for 'splash screen' -->
     <color name="bootsplash_background">#FFFBFE</color>
+     <color name="white">#FFF</color>
 </resources>

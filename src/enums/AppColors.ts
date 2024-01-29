@@ -42,6 +42,7 @@ enum AppColors {
   ELEVATION_LEVEL_3 = 'rgb(238, 232, 244)',
   ELEVATION_LEVEL_4 = 'rgb(236, 230, 243)',
   ELEVATION_LEVEL_5 = 'rgb(233, 227, 241)',
+  CONTAINER_IMAGE = 'rgba(243,246,200,255)',
 
   // App colors.
   // TODO: Add app colors here.

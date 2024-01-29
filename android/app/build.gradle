@@ -164,13 +164,16 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-
+implementation project(':react-native-push-notification')
     // Added for fixing crash appeared in some devices in Firebase.
     // java.lang.UnsatisfiedLinkError: couldn't find DSO to load: libhermes.so
     implementation 'com.facebook.soloader:soloader:0.10.5'
 
     // Added for enabling multidex.
     implementation 'androidx.multidex:multidex:2.0.1'
+
+    // ImageToText
+    implementation 'com.google.mlkit:text-recognition:16.0.0'
 
     // Added for splash screen.
     implementation "androidx.core:core-splashscreen:1.0.0"

@@ -3,6 +3,7 @@ import {MMKVLoader} from 'react-native-mmkv-storage';
 import LocalStorageKeys from './keys';
 import {AppLanguages} from 'enums';
 import type {User} from 'types';
+import {AddMedicalModel} from 'data/AddMedicalModel';
 
 const getLogMessage = (message: string) => {
   return `## LocalStorage: ${message}`;
@@ -148,4 +149,30 @@ export const removeUser = () => {
   const userRemoved = removeItem(LocalStorageKeys.USER);
   console.info(getLogMessage('userRemoved'), userRemoved);
   return userRemoved;
+};
+
+export const getAllMedical = async () => {
+  const medicals = await MMKV.getArrayAsync(LocalStorageKeys.MEDICAL);
+  return medicals ? (medicals as AddMedicalModel[]) : [];
+};
+
+export const addMedicalToLocalStorage = async (medical: AddMedicalModel) => {
+  const currentMedicalss = await getAllMedical();
+  const updatedMedicals = [...currentMedicalss, medical];
+  const medicalSaved = await setMap(LocalStorageKeys.MEDICAL, updatedMedicals);
+  return medicalSaved;
+};
+
+export const removeMedicalFromLocalStorage = async (
+  medicalToRemove: AddMedicalModel,
+) => {
+  const currentMedicals = await getAllMedical();
+  const updatedMedicals = currentMedicals.filter(
+    medical => medical !== medicalToRemove,
+  );
+  const medicalRemoved = await setMap(
+    LocalStorageKeys.MEDICAL,
+    updatedMedicals,
+  );
+  return medicalRemoved;
 };
