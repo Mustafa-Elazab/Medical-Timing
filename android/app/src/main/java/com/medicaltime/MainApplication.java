@@ -1,6 +1,8 @@
-package mostafa.app.medicaltime;
+package com.medicaltime;
 
 import androidx.multidex.MultiDexApplication;
+
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
@@ -8,10 +10,15 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
+import com.medicaltime.TextDetectionPackage;
+
 import java.util.List;
 
 // Added for 'react-native-orientation-locker'.
 import org.wonday.orientation.OrientationActivityLifecycle;
+
+import mostafa.app.medicaltime.BuildConfig;
+import mostafa.app.medicaltime.ReactNativeFlipper;
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
 
@@ -28,7 +35,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
-          new ReactNativePushNotificationPackage()
+          new ReactNativePushNotificationPackage();
            packages.add(new TextDetectionPackage());
           return packages;
         }

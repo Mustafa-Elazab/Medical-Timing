@@ -1,12 +1,14 @@
 import {createSlice, type PayloadAction} from '@reduxjs/toolkit';
+import {AddMedicalModel} from 'data/AddMedicalModel';
 
 import type {User} from 'types';
 
 interface UserState {
   user?: User;
+  medicals?: AddMedicalModel[];
 }
 
-const initialState = {user: undefined} as UserState;
+const initialState = {user: undefined, medicals: undefined} as UserState;
 
 export const userSlice = createSlice({
   name: 'user',
@@ -18,9 +20,23 @@ export const userSlice = createSlice({
     removeUser(state) {
       state.user = undefined;
     },
+    getAllMedicalsStore(state, action: PayloadAction<AddMedicalModel[]>) {
+      state.medicals = action.payload;
+    },
+    removeMedicalFromStore(state, action: PayloadAction<AddMedicalModel>) {
+      const medicalToRemove = action.payload;
+      state.medicals = state.medicals?.filter(
+        medical => medical.id !== medicalToRemove.id,
+      );
+    },
   },
 });
 
-export const {setUser, removeUser} = userSlice.actions;
+export const {
+  setUser,
+  removeUser,
+  getAllMedicalsStore,
+  removeMedicalFromStore,
+} = userSlice.actions;
 
 export default userSlice.reducer;

@@ -1,4 +1,4 @@
-package mostafa.app.medicaltime;
+package com.medicaltime;
 
 import android.net.Uri;
 import android.util.Log;

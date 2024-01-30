@@ -9,13 +9,12 @@ const addMedicalStyles = ScaledSheet.create({
     backgroundColor: AppColors.SECONDARY_CONTAINER,
   },
   button: {
-    width: '90%',
-    marginTop: vs(24),
     alignSelf: 'center',
-    borderRadius: ms(8),
-    height: vs(48),
-    alignItems: 'center',
+    marginTop: ms(40),
+    borderRadius: 8,
+    width: '100%',
     justifyContent: 'center',
+    height: vs(48),
   },
   container: {
     flexDirection: 'column',
@@ -38,6 +37,29 @@ const addMedicalStyles = ScaledSheet.create({
     height: ms(48),
     borderRadius: ms(4),
     backgroundColor: AppColors.SECONDARY_CONTAINER,
+  },
+  foodPill: {
+    width: '49%',
+    height: ms(80),
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: ms(8),
+  },
+  rowFullWidthSpaceBetween: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  imageRound: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    backgroundColor: 'red',
+    width: '90%',
+    alignSelf: 'center',
+    marginTop: ms(16),
   },
 });
 

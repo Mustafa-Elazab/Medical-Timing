@@ -1,4 +1,5 @@
 export interface AddMedicalModel {
+  id: string;
   pillName: string;
   description: string;
   number_of_pill: number;

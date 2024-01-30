@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {Appbar, Avatar, Icon, Modal, Portal} from 'react-native-paper';
+import {Modal, Portal} from 'react-native-paper';
 import {
   Button,
   IconButton,
@@ -15,7 +15,7 @@ import {Pressable, View} from 'react-native';
 import Screen from 'components/Screen';
 import AppColors from 'enums/AppColors';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import {ms, s, vs} from 'react-native-size-matters';
+import {ms, vs} from 'react-native-size-matters';
 import * as ImagePicker from 'react-native-image-picker';
 import {TextInput as PaperInput} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -25,11 +25,15 @@ import moment from 'moment';
 import addMedicalStyles from './styles';
 import {addMedicalToLocalStorage} from 'core/LocalStorage';
 import PushNotification from 'react-native-push-notification';
+import {RootStackScreenProps} from 'types/navigation';
+import {AddMedicalModel} from 'data/AddMedicalModel';
 
-export default React.memo(() => {
+export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
   const getLogMessage = (message: string) => {
     return `## Add: ${message}`;
   };
+
+  const {navigation} = props;
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -39,6 +43,7 @@ export default React.memo(() => {
   const [pickerResponse, setPickerResponse] = useState(null);
   const [selectedDays, setSelectedDays] = useState();
   const [pills, setPills] = useState();
+  const [dateInMillies, setDateInMillies] = useState(0);
   const [formattedDate, setFormattedDate] = useState('Notification');
   const [isBeforeEating, setIsBeforeEating] = useState(true);
 
@@ -71,7 +76,7 @@ export default React.memo(() => {
 
           console.info(getLogMessage('add'), result?.blocks);
           setBillName(result?.blocks);
-          setFormValue('pillName', result?.blocks);
+          setValue('pillName', result?.blocks);
         }
       } catch (error) {
         console.log(error);
@@ -86,8 +91,20 @@ export default React.memo(() => {
   const onSubmitPress = async (data: FormValues) => {
     try {
       console.info(getLogMessage('add medical'), data);
-      await addMedicalToLocalStorage(data);
+      const formData = {
+        id: Date.now(),
+        pillName: data.pillName,
+        description: data.description,
+        number_of_day: data.number_of_day,
+        number_of_pill: data.number_of_pill,
+        notification: data.notification,
+        is_before_eating: data.is_before_eating,
+      };
+      await addMedicalToLocalStorage(formData).then(() => {
+        navigation.goBack();
+      });
     } catch (error) {
+      alert(JSON.stringify(error));
     } finally {
     }
   };
@@ -100,19 +117,24 @@ export default React.memo(() => {
     setDatePickerVisibility(false);
   };
 
-  const handleConfirm = date => {
+  const handleConfirm = (date: Date) => {
     console.warn('A date has been picked: ', date);
+    console.info(getLogMessage('datata'), date);
     const formatted = moment(date).format('h:mm A');
     setFormattedDate(formatted);
     setValue('notification', formatted);
     hideDatePicker();
+    setDateInMillies(Date.parse(date));
+    console.info(getLogMessage('datata222'), Date.parse(date));
+    console.info(getLogMessage('datata3333'), Date.now());
   };
 
   type FormValues = {
+    id?: string;
     pillName?: string;
     description?: string;
-    number_of_pill?: number;
-    number_of_day?: number;
+    number_of_pill?: string;
+    number_of_day?: string;
     is_before_eating?: boolean;
     notification?: number;
   };
@@ -124,6 +146,7 @@ export default React.memo(() => {
     formState: {errors: formErrors},
   } = useForm<FormValues>({
     defaultValues: {
+      id: undefined,
       pillName: undefined,
       description: undefined,
       number_of_pill: undefined,
@@ -137,6 +160,7 @@ export default React.memo(() => {
     <IconButton
       iconName="arrow-left"
       size={40}
+      onPress={() => navigation.goBack()}
       color={AppColors.SHADOW}
       style={addMedicalStyles.appBar}
     />
@@ -186,14 +210,12 @@ export default React.memo(() => {
   ];
 
   const addNotification = () => {
-    PushNotification.localNotification({
-      //... You can use all the options from localNotifications
-      message: 'My Notification Message', // (required)
-      //  date: new Date(Date.now() + 60 * 1000), // in 60 secs
-      allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
-
+    PushNotification.scheduleLocalNotification({
+      message: 'My Notification Message',
+      date: new Date(dateInMillies),
+      allowWhileIdle: false,
       /* Android Only Properties */
-      repeatTime: 1, // (optional) Increment of configured repeatType. Check 'Repeating Notifications' section for more info.
+      repeatTime: 1,
     });
   };
 
@@ -279,16 +301,7 @@ export default React.memo(() => {
   );
 
   const getImageRound = () => (
-    <View
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignContent: 'center',
-        backgroundColor: 'red',
-        width: '90%',
-        alignSelf: 'center',
-        marginTop: ms(16),
-      }}>
+    <View style={addMedicalStyles.imageRound}>
       <ImagePlaceholder
         source={uri}
         placeholder={require('../../assets/images/bootsplash_logo.png')}
@@ -381,13 +394,7 @@ export default React.memo(() => {
   const getFirstTimeInput = () => (
     <View>
       <Text style={{fontWeight: 'bold', fontSize: 13}}>Notification</Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignSelf: 'center',
-          justifyContent: 'space-between',
-          width: '100%',
-        }}>
+      <View style={addMedicalStyles.rowFullWidthSpaceBetween}>
         <TextInput
           style={[
             styles.input,
@@ -474,17 +481,14 @@ export default React.memo(() => {
             setValue('is_before_eating', true);
             setIsBeforeEating(true);
           }}
-          style={{
-            backgroundColor: isBeforeEating
-              ? AppColors.PRIMARY
-              : AppColors.SECONDARY_CONTAINER,
-            width: '49%',
-            height: ms(80),
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: ms(8),
-          }}>
+          style={[
+            addMedicalStyles.foodPill,
+            {
+              backgroundColor: isBeforeEating
+                ? AppColors.PRIMARY
+                : AppColors.SECONDARY_CONTAINER,
+            },
+          ]}>
           {dinnerIcon()}
           {pillsIcon()}
         </Pressable>
@@ -493,17 +497,14 @@ export default React.memo(() => {
             setValue('is_before_eating', false);
             setIsBeforeEating(false);
           }}
-          style={{
-            backgroundColor: isBeforeEating
-              ? AppColors.SECONDARY_CONTAINER
-              : AppColors.PRIMARY,
-            width: '49%',
-            height: ms(80),
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: ms(8),
-          }}>
+          style={[
+            addMedicalStyles.foodPill,
+            {
+              backgroundColor: isBeforeEating
+                ? AppColors.SECONDARY_CONTAINER
+                : AppColors.PRIMARY,
+            },
+          ]}>
           {pillsIcon()}
           {dinnerIcon()}
         </Pressable>
@@ -548,27 +549,13 @@ export default React.memo(() => {
         <Button
           text="Done"
           onPress={handleSubmit(onSubmitPress)}
-          style={{
-            alignSelf: 'center',
-            marginTop: ms(40),
-            borderRadius: 8,
-            width: '100%',
-            justifyContent: 'center',
-            height: vs(48),
-          }}
+          style={addMedicalStyles.button}
         />
 
         <Button
           text="Done"
           onPress={() => addNotification()}
-          style={{
-            alignSelf: 'center',
-            marginTop: ms(40),
-            borderRadius: 8,
-            width: '100%',
-            justifyContent: 'center',
-            height: vs(48),
-          }}
+          style={addMedicalStyles.button}
         />
       </ScrollView>
     </Screen>

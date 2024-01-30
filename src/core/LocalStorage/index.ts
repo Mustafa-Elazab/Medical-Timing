@@ -168,7 +168,7 @@ export const removeMedicalFromLocalStorage = async (
 ) => {
   const currentMedicals = await getAllMedical();
   const updatedMedicals = currentMedicals.filter(
-    medical => medical !== medicalToRemove,
+    medical => medical.id !== medicalToRemove.id,
   );
   const medicalRemoved = await setMap(
     LocalStorageKeys.MEDICAL,

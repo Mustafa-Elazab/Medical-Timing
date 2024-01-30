@@ -19,32 +19,44 @@ import {RootStackScreenProps} from 'types/navigation';
 import {getAllMedical, removeMedicalFromLocalStorage} from 'core/LocalStorage';
 import {AddMedicalModel} from 'data/AddMedicalModel';
 import Swipeable from 'react-native-swipeable';
+import {useDispatch} from 'react-redux';
+import {removeMedicalFromStore} from 'store/user';
 
 export default React.memo((props: RootStackScreenProps<'Home'>) => {
   const {navigation} = props;
   const [searchText, setSearchText] = React.useState('');
   const [medicals, setMedical] = React.useState([]);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const fetchData = async () => {
       const medicalData = await getAllMedical();
       setMedical(medicalData);
     };
-
     fetchData();
   }, []);
 
-  const rightButtons = (item) => [
-    <TouchableHighlight key="deleteButton">
-      <IconButton
-        iconName="delete"
-        onPress={() => removeMedicalFromLocalStorage(item)}
-        shouldRasterizeIOS
-        style={{
-          alignItems: 'center',
-        }}
-      />
-    </TouchableHighlight>,
+  const rightButtons = (item: AddMedicalModel) => [
+    <View
+      style={{
+        justifyContent: 'center',
+        height: '100%',
+      }}>
+      <TouchableHighlight key="deleteButton">
+        <IconButton
+          iconName="delete"
+          onPress={() => {
+            dispatch(removeMedicalFromStore(item));
+            removeMedicalFromLocalStorage(item);
+          }}
+          shouldRasterizeIOS
+          style={{
+            alignItems: 'center',
+          }}
+        />
+      </TouchableHighlight>
+    </View>,
   ];
 
   const renderItem = ({item}: {item: AddMedicalModel}) => (
@@ -53,25 +65,46 @@ export default React.memo((props: RootStackScreenProps<'Home'>) => {
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'space-evenly',
           padding: ms(8),
           backgroundColor: AppColors.SECONDARY_CONTAINER,
           borderRadius: ms(8),
         }}>
-        <View
-          style={{flexDirection: 'row', alignItems: 'center'}}
-          shouldRasterizeIOS>
+        <View style={{width: '10%'}} shouldRasterizeIOS>
           <Icon source={'pill'} size={24} />
-          <View style={{marginEnd: ms(8)}} />
+        </View>
+
+        <View style={{width: '80%'}} shouldRasterizeIOS>
           <View>
             <Text style={{fontWeight: 'bold'}}>{item.pillName}</Text>
-            <Text style={{fontWeight: '100'}}>
-              Pills : {item.number_of_pill}
-            </Text>
-            <Text style={{fontWeight: '100'}}>{item.notification}</Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+              shouldRasterizeIOS>
+              <Text style={{fontWeight: '100'}}>
+                Pills : {item.number_of_pill}
+              </Text>
+              <Text style={{fontWeight: '100'}}>
+                Days : {item.number_of_day}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+              shouldRasterizeIOS>
+              <Text style={{fontWeight: '100'}}>{item.description}</Text>
+              <Text style={{fontWeight: '100'}}>{item.notification}</Text>
+            </View>
           </View>
         </View>
-        <Icon source={'chevron-right'} size={24} />
+
+        <View style={{width: '10%'}} shouldRasterizeIOS>
+          <Icon source={'chevron-right'} size={24} />
+        </View>
       </View>
     </Swipeable>
   );
@@ -157,17 +190,6 @@ export default React.memo((props: RootStackScreenProps<'Home'>) => {
     <>
       {spacerUp(20)}
       {searchInput()}
-      {spacerUp(20)}
-      {
-        <View>
-          <Text variant="headlineMedium" style={{margin: 0, padding: 0}}>
-            Hello
-          </Text>
-          <Text variant="headlineSmall" style={{margin: 0, padding: 0}}>
-            Mostafa
-          </Text>
-        </View>
-      }
       {spacerUp(20)}
       {homeImageContent()}
       {spacerUp(20)}

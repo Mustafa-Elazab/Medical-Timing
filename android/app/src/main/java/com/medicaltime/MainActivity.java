@@ -1,4 +1,4 @@
-package mostafa.app.medicaltime;
+package com.medicaltime;
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
