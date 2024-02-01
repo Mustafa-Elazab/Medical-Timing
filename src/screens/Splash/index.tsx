@@ -9,6 +9,7 @@ import {
   setUser as setStateUser,
   getUserApi,
   removeUser as removeStateUser,
+  getAllMedicalsStore,
 } from 'store';
 import {
   getLanguage,
@@ -16,6 +17,7 @@ import {
   getUser as getLocalStorageUser,
   setUser as setLocalStorageUser,
   removeUser as removeLocalStorageUser,
+  getAllMedical,
 } from 'core';
 import type {RootStackScreenProps, User} from 'types';
 import {AppImages} from 'enums';
@@ -145,9 +147,15 @@ export default React.memo((props: RootStackScreenProps<'Splash'>) => {
       }
     };
 
+    const getMedicals = async () => {
+      const medicals = await getAllMedical();
+      dispatch(getAllMedicalsStore(medicals));
+    };
+
     if (bootSplashLogoIsLoaded) {
       getSavedLanguage();
       getSavedUser();
+      getMedicals();
     }
   }, [bootSplashLogoIsLoaded, callGetUserApi, dispatch]);
 

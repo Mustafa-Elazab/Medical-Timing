@@ -4,7 +4,7 @@ enum AppColors {
 
   // Theme colors.
   // TODO: Edit theme colors to match app theme.
-  PRIMARY = 'rgba(27,209,93,255)',
+  PRIMARY = 'rgba(50,209,93,255)',
   PRIMARY_CONTAINER = 'rgba(234, 221, 255, 1)',
   SECONDARY = 'rgba(98, 91, 113, 1)',
   SECONDARY_CONTAINER = 'rgba(232, 222, 248, 1)',

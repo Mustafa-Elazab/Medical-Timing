@@ -23,6 +23,9 @@ export const userSlice = createSlice({
     getAllMedicalsStore(state, action: PayloadAction<AddMedicalModel[]>) {
       state.medicals = action.payload;
     },
+    setMedicalToStore(state, action: PayloadAction<AddMedicalModel>) {
+      state.medicals?.push(action.payload);
+    },
     removeMedicalFromStore(state, action: PayloadAction<AddMedicalModel>) {
       const medicalToRemove = action.payload;
       state.medicals = state.medicals?.filter(
@@ -37,6 +40,7 @@ export const {
   removeUser,
   getAllMedicalsStore,
   removeMedicalFromStore,
+  setMedicalToStore,
 } = userSlice.actions;
 
 export default userSlice.reducer;

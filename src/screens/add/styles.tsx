@@ -4,7 +4,7 @@ import {ScaledSheet, ms, vs} from 'react-native-size-matters';
 const addMedicalStyles = ScaledSheet.create({
   input: {
     marginTop: vs(0),
-    height: vs(48),
+    height: vs(40),
     borderRadius: ms(4),
     backgroundColor: AppColors.SECONDARY_CONTAINER,
   },

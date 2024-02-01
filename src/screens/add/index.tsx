@@ -26,7 +26,9 @@ import addMedicalStyles from './styles';
 import {addMedicalToLocalStorage} from 'core/LocalStorage';
 import PushNotification from 'react-native-push-notification';
 import {RootStackScreenProps} from 'types/navigation';
-import {AddMedicalModel} from 'data/AddMedicalModel';
+import {useDispatch} from 'react-redux';
+import {setMedicalToStore} from 'store/user';
+import {localChannelId} from 'utils/NotificationUtils';
 
 export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
   const getLogMessage = (message: string) => {
@@ -36,6 +38,7 @@ export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
   const {navigation} = props;
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
@@ -91,8 +94,9 @@ export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
   const onSubmitPress = async (data: FormValues) => {
     try {
       console.info(getLogMessage('add medical'), data);
+      addNotification(data.pillName);
       const formData = {
-        id: Date.now(),
+        id: Date.now().toString,
         pillName: data.pillName,
         description: data.description,
         number_of_day: data.number_of_day,
@@ -100,6 +104,7 @@ export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
         notification: data.notification,
         is_before_eating: data.is_before_eating,
       };
+      dispatch(setMedicalToStore(formData));
       await addMedicalToLocalStorage(formData).then(() => {
         navigation.goBack();
       });
@@ -120,9 +125,9 @@ export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
   const handleConfirm = (date: Date) => {
     console.warn('A date has been picked: ', date);
     console.info(getLogMessage('datata'), date);
-    const formatted = moment(date).format('h:mm A');
+    const formatted: string = moment(date).format('h:mm A');
     setFormattedDate(formatted);
-    setValue('notification', formatted);
+    setValue('notification', parseInt(formatted, 10));
     hideDatePicker();
     setDateInMillies(Date.parse(date));
     console.info(getLogMessage('datata222'), Date.parse(date));
@@ -167,7 +172,7 @@ export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
   );
 
   const dayNum: SelectItem[] = [
-    {dropdownTitle: '1', key: '1'},
+    {dropdownTitle: '1', key: '1', value: '1'},
     {dropdownTitle: '2', key: '2'},
     {dropdownTitle: '3', key: '3'},
     {dropdownTitle: '4', key: '4'},
@@ -209,13 +214,14 @@ export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
     {dropdownTitle: '6', key: '6'},
   ];
 
-  const addNotification = () => {
-    PushNotification.scheduleLocalNotification({
-      message: 'My Notification Message',
-      date: new Date(dateInMillies),
-      allowWhileIdle: false,
-      /* Android Only Properties */
+  const addNotification = (pillName: string) => {
+    PushNotification.localNotificationSchedule({
       repeatTime: 1,
+      title: 'Pill Notification',
+      date: new Date(dateInMillies),
+      message: `Time For Pill ${pillName}`,
+      allowWhileIdle: false,
+      channelId: localChannelId,
     });
   };
 
@@ -357,7 +363,6 @@ export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
           setValue('number_of_pill', formattedValue);
           console.info(getLogMessage('formattedValue'), formattedValue);
         },
-        isCheckBox: false,
       }}
     />
   );
@@ -386,7 +391,6 @@ export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
           setValue('number_of_day', formattedValue);
           console.info(getLogMessage('formattedValue'), formattedValue);
         },
-        isCheckBox: false,
       }}
     />
   );
@@ -395,31 +399,28 @@ export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
     <View>
       <Text style={{fontWeight: 'bold', fontSize: 13}}>Notification</Text>
       <View style={addMedicalStyles.rowFullWidthSpaceBetween}>
-        <TextInput
-          style={[
-            styles.input,
-            {
-              width: '80%',
-              alignSelf: 'flex-start',
-            },
-          ]}
-          placeholder={'Notifcation'}
-          isRequired
-          onPressOut={showDatePicker}
-          underlineColor="transparent"
-          editable={true}
-          onPressIn={showDatePicker}
-          value={formattedDate}
-          left={
-            <PaperInput.Icon
-              icon="bell"
-              size={24}
-              color={AppColors.PRIMARY}
-              style={{alignSelf: 'center'}}
-              onPress={showDatePicker}
-            />
-          }
-        />
+        <Pressable
+          onPress={showDatePicker}
+          style={{width: '80%', alignSelf: 'flex-start'}}>
+          <TextInput
+            style={styles.input}
+            placeholder={'Notifcation'}
+            isRequired
+            underlineColor="transparent"
+            editable={false}
+            disabled={false}
+            value={formattedDate}
+            left={
+              <PaperInput.Icon
+                icon="bell"
+                size={24}
+                color={AppColors.PRIMARY}
+                style={{alignSelf: 'center'}}
+                onPress={showDatePicker}
+              />
+            }
+          />
+        </Pressable>
         <DateTimePickerModal
           isVisible={isDatePickerVisible}
           mode="time"
@@ -442,7 +443,7 @@ export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
   );
 
   const rowInput = () => (
-    <View>
+    <View style={{width: '100%'}}>
       <Text style={{fontWeight: 'bold', fontSize: 13}}>
         Amount & How Long ?
       </Text>
@@ -545,16 +546,9 @@ export default React.memo((props: RootStackScreenProps<'AddMedical'>) => {
         {spacerUp(20)}
         {inputForm()}
         {showViewModal()}
-
         <Button
           text="Done"
           onPress={handleSubmit(onSubmitPress)}
-          style={addMedicalStyles.button}
-        />
-
-        <Button
-          text="Done"
-          onPress={() => addNotification()}
           style={addMedicalStyles.button}
         />
       </ScrollView>

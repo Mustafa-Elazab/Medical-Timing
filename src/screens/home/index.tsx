@@ -19,23 +19,25 @@ import {RootStackScreenProps} from 'types/navigation';
 import {getAllMedical, removeMedicalFromLocalStorage} from 'core/LocalStorage';
 import {AddMedicalModel} from 'data/AddMedicalModel';
 import Swipeable from 'react-native-swipeable';
-import {useDispatch} from 'react-redux';
-import {removeMedicalFromStore} from 'store/user';
+import {useDispatch, useSelector} from 'react-redux';
+import {getAllMedicalsStore, removeMedicalFromStore} from 'store/user';
+import {type RootState} from 'store';
 
 export default React.memo((props: RootStackScreenProps<'Home'>) => {
   const {navigation} = props;
   const [searchText, setSearchText] = React.useState('');
-  const [medicals, setMedical] = React.useState([]);
+
+  const medicals = useSelector((state: RootState) => state.user.medicals);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
       const medicalData = await getAllMedical();
-      setMedical(medicalData);
+      dispatch(getAllMedicalsStore(medicalData));
     };
     fetchData();
-  }, []);
+  }, [dispatch]);
 
   const rightButtons = (item: AddMedicalModel) => [
     <View
@@ -46,7 +48,7 @@ export default React.memo((props: RootStackScreenProps<'Home'>) => {
       <TouchableHighlight key="deleteButton">
         <IconButton
           iconName="delete"
-          onPress={() => {
+          onPress={async () => {
             dispatch(removeMedicalFromStore(item));
             removeMedicalFromLocalStorage(item);
           }}
